@@ -43,19 +43,19 @@
 <body>
 
 <div class="controls">
-    <button id="playPause">⏸️ Pauza</button>
-    <label>Interval (sekundy): <input id="intervalInput" type="number" value="15" min="1" style="width:60px;"></label>
+    <button id="playPause">⏸️</button>
+    <label>Interval (s): <input id="intervalInput" type="number" value="5" min="1" style="width:35px;"></label>
 </div>
 
 <script>
     const urls = [
-        "https://cs.wikipedia.org",
         "1.html",
         "https://dzymator.github.io/ID_calculator/",
-        "https://www.cometsystem.cloud/measured-places/list"
+        //"https://www.cometsystem.cloud/measured-places/list",
+        "https://cometsystem.cloud/auth/demo?guid=fJLGB2nljVx"
     ];
 
-    let interval = 15000;
+    let interval = 5000;
     let rotation;
     let isPaused = false;
     let currentIndex = 0;
@@ -89,10 +89,10 @@
     document.getElementById('playPause').addEventListener('click', (e) => {
         if (isPaused) {
             startRotation();
-            e.target.textContent = "⏸️ Pauza";
+            e.target.textContent = "⏸️";
         } else {
             pauseRotation();
-            e.target.textContent = "▶️ Play";
+            e.target.textContent = "▶️";
         }
         isPaused = !isPaused;
     });
