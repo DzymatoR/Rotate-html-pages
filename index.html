@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <title>HTML Rotace s ovládáním</title>
+    <style>
+        body { margin: 0; overflow: hidden; font-family: sans-serif; }
+        iframe {
+            width: 100vw;
+            height: 100vh;
+            border: none;
+            position: absolute;
+            top: 0; left: 0;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.5s ease-in-out;
+        }
+        iframe.active {
+            opacity: 1;
+            pointer-events: all;
+            z-index: 1;
+        }
+        .controls {
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            z-index: 10;
+            background: rgba(0,0,0,0.5);
+            padding: 10px;
+            border-radius: 5px;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        button, input {
+            padding: 5px;
+            border-radius: 3px;
+            border: none;
+        }
+    </style>
+</head>
+<body>
+
+<div class="controls">
+    <button id="playPause">⏸️ Pauza</button>
+    <label>Interval (sekundy): <input id="intervalInput" type="number" value="15" min="1" style="width:60px;"></label>
+</div>
+
+<script>
+    const urls = [
+        "https://cs.wikipedia.org",
+        "1.html",
+        "https://dzymator.github.io/ID_calculator/",
+        "https://www.cometsystem.cloud/measured-places/list"
+    ];
+
+    let interval = 15000;
+    let rotation;
+    let isPaused = false;
+    let currentIndex = 0;
+
+    const iframes = [];
+
+    function preloadPages(urls) {
+        urls.forEach((url, index) => {
+            const iframe = document.createElement('iframe');
+            iframe.src = url;
+            if (index === 0) iframe.classList.add('active');
+            document.body.appendChild(iframe);
+            iframes.push(iframe);
+        });
+    }
+
+    function rotatePages() {
+        iframes[currentIndex].classList.remove('active');
+        currentIndex = (currentIndex + 1) % iframes.length;
+        iframes[currentIndex].classList.add('active');
+    }
+
+    function startRotation() {
+        rotation = setInterval(rotatePages, interval);
+    }
+
+    function pauseRotation() {
+        clearInterval(rotation);
+    }
+
+    document.getElementById('playPause').addEventListener('click', (e) => {
+        if (isPaused) {
+            startRotation();
+            e.target.textContent = "⏸️ Pauza";
+        } else {
+            pauseRotation();
+            e.target.textContent = "▶️ Play";
+        }
+        isPaused = !isPaused;
+    });
+
+    document.getElementById('intervalInput').addEventListener('change', (e) => {
+        interval = parseInt(e.target.value, 10) * 1000;
+        if (!isPaused) {
+            pauseRotation();
+            startRotation();
+        }
+    });
+
+    preloadPages(urls);
+    startRotation();
+</script>
+
+</body>
+</html>
+
+
