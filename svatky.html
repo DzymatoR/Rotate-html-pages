@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <title>Přání k svátku</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f9ff;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .card {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            text-align: center;
+        }
+        h1 {
+            margin: 0 0 10px 0;
+        }
+        .wish {
+            font-size: 1.2em;
+            color: #0066cc;
+            margin-top: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>Dnes slaví svátek:</h1>
+        <div id="jmeno" style="font-size: 2em; font-weight: bold;">Načítám...</div>
+        <div id="prani" class="wish"></div>
+    </div>
+
+    <script>
+        fetch('svatky.json')
+            .then(response => response.json())
+            .then(data => {
+                const dnes = new Date();
+                const mesicDen = (dnes.getMonth() + 1) + "-" + dnes.getDate();
+
+                const jmenoDiv = document.getElementById("jmeno");
+                const praniDiv = document.getElementById("prani");
+
+                if (data.svatky[mesicDen]) {
+                    jmenoDiv.textContent = data.svatky[mesicDen];
+                    praniDiv.textContent = data.prani[Math.floor(Math.random() * data.prani.length)];
+                } else {
+                    jmenoDiv.textContent = "Nikdo ze seznamu";
+                    praniDiv.textContent = "Dnes nikdo nemá svátek.";
+                }
+            })
+            .catch(error => {
+                console.error('Chyba při načítání souboru:', error);
+                document.getElementById("jmeno").textContent = "Chyba při načítání dat";
+            });
+    </script>
+</body>
+</html>
