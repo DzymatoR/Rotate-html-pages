@@ -43,29 +43,36 @@
 <body>
 
 <div class="controls">
-    <button id="playPause">⏸️</button>
-    <label>Interval (s): <input id="intervalInput" type="number" value="5" min="1" style="width:35px;"></label>
+    <button id="playPause">⏸️ Pauza</button>
+    <label>...Cyklus(s): <input id="totalDuration" type="number" value="60" min="1" style="width:60px;"></label>
 </div>
 
 <script>
-    const urls = [
-        "https://dzymator.github.io/ID_calculator/",
-        "svatky.html",
-        //"https://www.cometsystem.cloud/measured-places/list",
-        "https://cometsystem.cloud/auth/demo?guid=fJLGB2nljVx"
+    const pages = [
+        { url: "https://dzymator.github.io/ID_calculator/", weight: 5 },
+        { url: "svatky.html", weight: 1 },
+        { url: "https://www.cometsystem.cloud/measured-places/list", weight: 1 },
+        { url: "https://cometsystem.cloud/auth/demo?guid=fJLGB2nljVx", weight: 1 }
     ];
 
-    let interval = 5000;
-    let rotation;
+    let rotationTimeout;
     let isPaused = false;
     let currentIndex = 0;
+    let totalDuration = 60000; // výchozí 60 sekund
 
     const iframes = [];
 
-    function preloadPages(urls) {
-        urls.forEach((url, index) => {
+    function calculateDurations() {
+        const totalWeight = pages.reduce((sum, p) => sum + p.weight, 0);
+        pages.forEach(p => {
+            p.duration = totalDuration * (p.weight / totalWeight);
+        });
+    }
+
+    function preloadPages(pages) {
+        pages.forEach((page, index) => {
             const iframe = document.createElement('iframe');
-            iframe.src = url;
+            iframe.src = page.url;
             if (index === 0) iframe.classList.add('active');
             document.body.appendChild(iframe);
             iframes.push(iframe);
@@ -76,40 +83,45 @@
         iframes[currentIndex].classList.remove('active');
         currentIndex = (currentIndex + 1) % iframes.length;
         iframes[currentIndex].classList.add('active');
+        scheduleNextRotation();
+    }
+
+    function scheduleNextRotation() {
+        rotationTimeout = setTimeout(rotatePages, pages[currentIndex].duration);
     }
 
     function startRotation() {
-        rotation = setInterval(rotatePages, interval);
+        scheduleNextRotation();
     }
 
     function pauseRotation() {
-        clearInterval(rotation);
+        clearTimeout(rotationTimeout);
     }
 
     document.getElementById('playPause').addEventListener('click', (e) => {
         if (isPaused) {
             startRotation();
-            e.target.textContent = "⏸️";
+            e.target.textContent = "⏸️ Pauza";
         } else {
             pauseRotation();
-            e.target.textContent = "▶️";
+            e.target.textContent = "▶️ Play";
         }
         isPaused = !isPaused;
     });
 
-    document.getElementById('intervalInput').addEventListener('change', (e) => {
-        interval = parseInt(e.target.value, 10) * 1000;
+    document.getElementById('totalDuration').addEventListener('change', (e) => {
+        totalDuration = parseInt(e.target.value, 10) * 1000;
+        calculateDurations();
         if (!isPaused) {
             pauseRotation();
             startRotation();
         }
     });
 
-    preloadPages(urls);
+    calculateDurations();
+    preloadPages(pages);
     startRotation();
 </script>
 
 </body>
 </html>
-
-
