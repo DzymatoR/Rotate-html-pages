@@ -44,14 +44,16 @@
 
 <div class="controls">
     <button id="playPause">⏸️ Pauza</button>
-    <label>...Cyklus(s): <input id="totalDuration" type="number" value="60" min="1" style="width:60px;"></label>
+    <button id="next">⏭️ Vpřed</button>
+    <label>Celková délka (sekundy): <input id="totalDuration" type="number" value="60" min="1" style="width:60px;"></label>
 </div>
 
 <script>
     const pages = [
         { url: "https://dzymator.github.io/ID_calculator/", weight: 5 },
         { url: "svatky.html", weight: 1 },
-        { url: "https://cometsystem.cloud/auth/demo?guid=fJLGB2nljVx", weight: 1 }
+        { url: "https://cometsystem.cloud/auth/demo?guid=Xue4vMEZ6SL", weight: 1 },
+        { url: "https://cometsystem.cloud/measured-places/2117/detail", weight: 1 }
     ];
 
     let rotationTimeout;
@@ -78,10 +80,14 @@
         });
     }
 
-    function rotatePages() {
+    function showPage(index) {
         iframes[currentIndex].classList.remove('active');
-        currentIndex = (currentIndex + 1) % iframes.length;
+        currentIndex = index % iframes.length;
         iframes[currentIndex].classList.add('active');
+    }
+
+    function rotatePages() {
+        showPage((currentIndex + 1) % iframes.length);
         scheduleNextRotation();
     }
 
@@ -108,6 +114,13 @@
         isPaused = !isPaused;
     });
 
+    document.getElementById('next').addEventListener('click', () => {
+        pauseRotation();
+        isPaused = true;
+        document.getElementById('playPause').textContent = "▶️ Play";
+        showPage((currentIndex + 1) % iframes.length);
+    });
+
     document.getElementById('totalDuration').addEventListener('change', (e) => {
         totalDuration = parseInt(e.target.value, 10) * 1000;
         calculateDurations();
@@ -124,3 +137,4 @@
 
 </body>
 </html>
+
